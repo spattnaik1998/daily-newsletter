@@ -1,43 +1,65 @@
 """
-Connector for fetching AI news articles using Apify crawlers.
+Connector for fetching AI news articles from RSS feeds.
 
-This module provides an interface to the Apify API to crawl and extract
-article data from major AI news websites.
+This module provides an interface to fetch real news articles from
+major AI news sources using RSS feeds.
 """
 
 import logging
 from typing import List, Dict, Any
+from datetime import datetime, timedelta
 import requests
 
-from config.settings import APIFY_API_BASE_URL, APIFY_TIMEOUT
+from config.settings import APIFY_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
 
 class ApifyConnector:
-    """Fetches AI news articles using Apify actors."""
+    """Fetches AI news articles from RSS feeds and web sources."""
 
     def __init__(self, api_token: str = None):
         """
         Initialize the ApifyConnector.
 
         Args:
-            api_token: Apify API token (can also be set via environment)
+            api_token: Apify API token (optional, for future Apify integration)
         """
-        self.base_url = APIFY_API_BASE_URL
         self.api_token = api_token or ""
         self.timeout = APIFY_TIMEOUT
 
-        # Suggested news sources to crawl
+        # Real AI news sources with RSS feeds
         self.news_sources = [
-            "https://techcrunch.com/category/artificial-intelligence/",
-            "https://venturebeat.com/category/ai/",
-            "https://www.theverge.com/ai-artificial-intelligence",
+            {
+                "name": "TechCrunch AI",
+                "url": "https://techcrunch.com/category/artificial-intelligence/",
+                "rss_url": "https://feeds.techcrunch.com/TechCrunch/AI",
+            },
+            {
+                "name": "VentureBeat AI",
+                "url": "https://venturebeat.com/category/ai/",
+                "rss_url": "https://feeds.venturebeat.com/venturebeat/ai",
+            },
+            {
+                "name": "The Verge AI",
+                "url": "https://www.theverge.com/ai-artificial-intelligence",
+                "rss_url": "https://www.theverge.com/ai-artificial-intelligence/index.xml",
+            },
+            {
+                "name": "MIT Technology Review AI",
+                "url": "https://www.technologyreview.com/artificial-intelligence/",
+                "rss_url": "https://www.technologyreview.com/feed/?tag=artificial-intelligence",
+            },
+            {
+                "name": "Hacker News",
+                "url": "https://news.ycombinator.com/newest",
+                "rss_url": "https://news.ycombinator.com/rss",
+            },
         ]
 
     def fetch_ai_news(self, hours: int = 24) -> List[Dict[str, Any]]:
         """
-        Fetch recent AI news articles from multiple sources.
+        Fetch recent AI news articles from multiple sources using RSS feeds.
 
         Args:
             hours: Number of hours to look back (default: 24)
@@ -45,135 +67,124 @@ class ApifyConnector:
         Returns:
             List of article metadata dictionaries containing:
             - title: Article title
-            - source: News source URL
+            - source: News source name
             - author: Author name
-            - url: Article URL
+            - url: Real article URL (clickable link)
             - publication_date: Publication datetime
-            - article_text: Article content summary
+            - article_text: Article summary
         """
         articles = []
+        cutoff_date = datetime.utcnow() - timedelta(hours=hours)
 
         for source in self.news_sources:
             try:
-                articles.extend(self._crawl_source(source))
+                logger.info(f"Fetching from {source['name']}")
+                articles.extend(self._fetch_from_rss(source, cutoff_date))
             except Exception as e:
-                logger.error(f"Failed to crawl source {source}: {e}")
+                logger.error(f"Failed to fetch from {source['name']}: {e}")
 
         return articles
 
-    def _crawl_source(self, source_url: str) -> List[Dict[str, Any]]:
+    def _fetch_from_rss(
+        self, source: Dict[str, str], cutoff_date: datetime
+    ) -> List[Dict[str, Any]]:
         """
-        Crawl a single news source.
+        Fetch articles from a news source RSS feed.
 
         Args:
-            source_url: URL of the source to crawl
+            source: Source metadata with RSS URL
+            cutoff_date: Only return articles after this date
 
         Returns:
             List of article metadata dictionaries
         """
-        logger.info(f"Crawling news source: {source_url}")
-
         try:
-            # This is a placeholder for Apify integration
-            # In production, you would call the actual Apify API with proper authentication
-            articles = self._mock_crawl_source(source_url)
+            import feedparser
+
+            rss_url = source.get("rss_url")
+            if not rss_url:
+                return []
+
+            logger.info(f"Fetching RSS: {rss_url}")
+            feed = feedparser.parse(rss_url)
+
+            articles = []
+
+            # Parse feed entries
+            for entry in feed.entries[:8]:  # Get up to 8 articles per source
+                try:
+                    # Parse publication date
+                    pub_date_str = entry.get("published", "")
+                    try:
+                        pub_date = datetime.strptime(
+                            pub_date_str[:19], "%Y-%m-%dT%H:%M:%S"
+                        )
+                    except (ValueError, TypeError):
+                        pub_date = datetime.utcnow()
+
+                    # Only include recent articles
+                    if pub_date < cutoff_date:
+                        continue
+
+                    article = {
+                        "title": entry.get("title", "No Title"),
+                        "url": entry.get("link", source.get("url", "")),
+                        "publication_date": pub_date_str,
+                        "article_text": self._clean_summary(entry.get("summary", "")),
+                        "author": entry.get("author", "Unknown"),
+                        "source": source.get("name", "Unknown"),
+                    }
+                    articles.append(article)
+                except Exception as e:
+                    logger.warning(f"Failed to parse entry: {e}")
+                    continue
+
+            logger.info(f"Fetched {len(articles)} articles from {source['name']}")
             return articles
+
+        except ImportError:
+            logger.error("feedparser not installed. Install with: pip install feedparser")
+            return []
         except Exception as e:
-            logger.error(f"Crawl failed for {source_url}: {e}")
+            logger.error(f"RSS fetch failed for {source['name']}: {e}")
             return []
 
-    def _mock_crawl_source(self, source_url: str) -> List[Dict[str, Any]]:
+    def _clean_summary(self, summary: str) -> str:
         """
-        Mock crawl function for testing (replace with real Apify API call).
+        Clean HTML from summary text and truncate.
 
         Args:
-            source_url: URL of the source
+            summary: Raw summary with possible HTML
 
         Returns:
-            List of mock article metadata
+            Cleaned text
         """
-        # This returns mock data for testing
-        # Replace with actual Apify API calls in production
-        return []
-
-    def trigger_actor(self, actor_id: str, input_data: Dict[str, Any]) -> str:
-        """
-        Trigger an Apify actor to start a crawl.
-
-        Args:
-            actor_id: Apify actor ID
-            input_data: Input data for the actor
-
-        Returns:
-            Run ID of the started actor
-        """
-        if not self.api_token:
-            logger.warning("Apify API token not set. Cannot trigger actor.")
-            return None
-
-        url = f"{self.base_url}/acts/{actor_id}/runs"
-        headers = {"Authorization": f"Bearer {self.api_token}"}
-
         try:
-            response = requests.post(
-                url, json=input_data, headers=headers, timeout=self.timeout
-            )
-            response.raise_for_status()
-            run_id = response.json().get("data", {}).get("id")
-            logger.info(f"Actor run triggered: {run_id}")
-            return run_id
-        except requests.RequestException as e:
-            logger.error(f"Failed to trigger actor: {e}")
-            return None
+            from html.parser import HTMLParser
 
-    def get_run_status(self, actor_id: str, run_id: str) -> Dict[str, Any]:
-        """
-        Get the status of an Apify actor run.
+            class HTMLStripper(HTMLParser):
+                def __init__(self):
+                    super().__init__()
+                    self.reset()
+                    self.strict = False
+                    self.convert_charrefs = True
+                    self.text = []
 
-        Args:
-            actor_id: Apify actor ID
-            run_id: Run ID to check
+                def handle_data(self, d):
+                    self.text.append(d)
 
-        Returns:
-            Status dictionary or None if request fails
-        """
-        if not self.api_token:
-            logger.warning("Apify API token not set.")
-            return None
+                def get_data(self):
+                    return "".join(self.text)
 
-        url = f"{self.base_url}/acts/{actor_id}/runs/{run_id}"
-        headers = {"Authorization": f"Bearer {self.api_token}"}
+            stripper = HTMLStripper()
+            stripper.feed(summary)
+            clean_text = stripper.get_data()
 
-        try:
-            response = requests.get(url, headers=headers, timeout=self.timeout)
-            response.raise_for_status()
-            return response.json().get("data")
-        except requests.RequestException as e:
-            logger.error(f"Failed to get run status: {e}")
-            return None
+            # Limit to first 250 chars
+            if len(clean_text) > 250:
+                clean_text = clean_text[:247] + "..."
 
-    def get_run_results(self, actor_id: str, run_id: str) -> List[Dict[str, Any]]:
-        """
-        Get results from a completed Apify actor run.
-
-        Args:
-            actor_id: Apify actor ID
-            run_id: Run ID
-
-        Returns:
-            List of result items
-        """
-        if not self.api_token:
-            logger.warning("Apify API token not set.")
-            return []
-
-        url = f"{self.base_url}/acts/{actor_id}/runs/{run_id}/dataset/items"
-        headers = {"Authorization": f"Bearer {self.api_token}"}
-
-        try:
-            response = requests.get(url, headers=headers, timeout=self.timeout)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            logger.error(f"Failed to get run results: {e}")
-            return []
+            return clean_text.strip()
+        except Exception:
+            # Fallback: just return truncated raw text
+            return summary[:250].strip()
