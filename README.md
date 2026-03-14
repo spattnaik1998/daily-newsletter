@@ -12,51 +12,146 @@ This project aggregates information from three major sources:
 
 The system generates a **clean, readable markdown newsletter** each day at 7:00 AM UTC.
 
+## Frontend
+
+A sophisticated, professional web interface built with **Next.js 14** and **React 18** provides:
+
+- **Dashboard**: Latest newsletter display with real-time stats
+- **Archive**: Searchable history of all past newsletters
+- **Responsive Design**: Mobile-friendly interface with refined aesthetics
+- **Markdown Viewer**: Beautiful rendering of newsletter content with syntax highlighting
+- **Download Options**: Export newsletters as Markdown, Text, or PDF
+- **Admin Controls**: Manual generation trigger, schedule management, source configuration
+
+The frontend features a **refined minimalist design** with:
+- Elegant typography (Playfair Display + Poppins + JetBrains Mono)
+- Deep slate backgrounds with cyan accents
+- Smooth animations and micro-interactions
+- Professional B2B SaaS aesthetic
+
+See [frontend/README.md](frontend/README.md) for detailed frontend documentation.
+
 ## Project Structure
 
 ```
 Newsletter_Daily/
-├── agents/                           # Agent modules
-│   ├── news_agent.py                # News crawler agent
-│   ├── arxiv_agent.py               # arXiv research agent
-│   ├── substack_agent.py            # Substack newsletter agent
-│   ├── summarization_agent.py       # Content summarization agent
-│   └── newsletter_agent.py          # Newsletter generation agent
+├── backend/                          # Python backend
+│   ├── agents/                       # Agent modules
+│   │   ├── news_agent.py            # News crawler agent
+│   │   ├── arxiv_agent.py           # arXiv research agent
+│   │   ├── substack_agent.py        # Substack newsletter agent
+│   │   ├── summarization_agent.py   # Content summarization agent
+│   │   └── newsletter_agent.py      # Newsletter generation agent
+│   │
+│   ├── connectors/                  # External data source connectors
+│   │   ├── apify_connector.py       # Apify API connector
+│   │   ├── arxiv_connector.py       # arXiv API connector
+│   │   └── substack_connector.py    # Substack content extractor
+│   │
+│   ├── pipeline/                    # Pipeline orchestration
+│   │   └── daily_pipeline.py        # Main pipeline coordinator
+│   │
+│   ├── utils/                       # Helper utilities
+│   │   └── text_processing.py       # Text processing functions
+│   │
+│   ├── config/                      # Configuration
+│   │   └── settings.py              # Configuration settings
+│   │
+│   ├── output/                      # Output directory
+│   │   └── newsletters/             # Generated newsletters
+│   │
+│   ├── main.py                      # Entry point script
+│   └── requirements.txt             # Python dependencies
 │
-├── connectors/                       # External data source connectors
-│   ├── apify_connector.py           # Apify API connector
-│   ├── arxiv_connector.py           # arXiv API connector
-│   └── substack_connector.py        # Substack content extractor
+├── frontend/                         # React/Next.js frontend
+│   ├── app/                         # Next.js App Router
+│   │   ├── layout.tsx              # Root layout
+│   │   ├── page.tsx                # Dashboard page
+│   │   └── globals.css             # Global styles
+│   │
+│   ├── components/                 # React components
+│   │   ├── Sidebar.tsx             # Navigation sidebar
+│   │   ├── Header.tsx              # Top header
+│   │   ├── StatsCard.tsx           # Statistics cards
+│   │   ├── NewsletterViewer.tsx    # Newsletter display
+│   │   └── Archive.tsx             # Archive view
+│   │
+│   ├── lib/                        # Utilities and hooks
+│   │   ├── api.ts                  # API client
+│   │   ├── utils.ts                # Helper functions
+│   │   └── hooks/                  # React hooks
+│   │
+│   ├── public/                     # Static assets
+│   ├── package.json                # npm dependencies
+│   ├── tsconfig.json               # TypeScript config
+│   ├── tailwind.config.ts          # Tailwind CSS config
+│   └── README.md                   # Frontend documentation
 │
-├── pipeline/                         # Pipeline orchestration
-│   └── daily_pipeline.py            # Main pipeline coordinator
-│
-├── utils/                            # Helper utilities
-│   └── text_processing.py           # Text processing functions
-│
-├── config/                           # Configuration
-│   └── settings.py                  # Configuration settings
-│
-├── output/                           # Output directory
-│   └── newsletters/                 # Generated newsletters
-│
-├── main.py                          # Entry point script
-├── requirements.txt                 # Python dependencies
-└── README.md                        # This file
+├── CLAUDE.md                        # Project specification
+├── README.md                        # This file
+└── SETUP.md                         # Repository setup guide
 ```
 
-## Installation
+## Full Stack Setup
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repo-url>
-   cd Newsletter_Daily
-   ```
+### Backend (Python)
 
-2. **Install dependencies:**
+1. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
+
+2. **Configure settings:**
+   Edit `config/settings.py` to customize sources and API settings.
+
+3. **Run the pipeline:**
+   ```bash
+   python main.py
+   ```
+
+### Frontend (Next.js)
+
+1. **Install Node dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Update `NEXT_PUBLIC_API_URL` to point to your backend.
+
+3. **Run development server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000)
+
+### Full Stack Development
+
+Run both services in parallel:
+
+**Terminal 1 - Backend:**
+```bash
+# Set up Python environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Access the application at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000 (when API service is added)
 
 ## Configuration
 
