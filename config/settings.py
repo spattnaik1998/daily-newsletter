@@ -27,6 +27,11 @@ SUBSTACK_TIMEOUT = 10
 
 # Article Filtering
 HOURS_LOOKBACK = 24  # Fetch content from last 24 hours
+MAX_SOURCE_AGE_DAYS = 3  # Maximum age of sources: 2-3 days (evaluated sources)
+
+# API Settings - Anthropic/Claude
+ANTHROPIC_API_KEY = None  # Set via environment variable ANTHROPIC_API_KEY
+ENABLE_RELEVANCE_EVALUATION = True  # Enable LLM-based relevance evaluation
 
 # Summarization Settings
 MAX_SUMMARY_TOKENS = 150

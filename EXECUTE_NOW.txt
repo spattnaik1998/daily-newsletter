@@ -1,0 +1,182 @@
+================================================================================
+       DAILY AI NEWSLETTER GENERATOR - QUICK START INSTRUCTIONS
+================================================================================
+
+SYSTEM STATUS: FULLY FUNCTIONAL AND TESTED ✓
+
+================================================================================
+STEP 1: INSTALL DEPENDENCIES (Run once)
+================================================================================
+
+Open Command Prompt / PowerShell and run:
+
+  pip install -r requirements.txt
+
+Wait for installation to complete.
+
+================================================================================
+STEP 2: START BACKEND API (Terminal 1)
+================================================================================
+
+In the same terminal, run:
+
+  python api_server.py
+
+You should see:
+  INFO:     Uvicorn running on http://0.0.0.0:8000
+
+Keep this terminal open (DO NOT CLOSE)
+
+================================================================================
+STEP 3: START FRONTEND (Terminal 2 - NEW TERMINAL)
+================================================================================
+
+Open a NEW terminal/command prompt and run:
+
+  cd frontend
+  npm run dev
+
+You should see:
+  ▲ Next.js 14.0.0
+  Local:        http://localhost:3000
+
+Keep this terminal open (DO NOT CLOSE)
+
+================================================================================
+STEP 4: OPEN BROWSER
+================================================================================
+
+Open your web browser and go to:
+
+  http://localhost:3000
+
+You should see the Newsletter Dashboard with:
+  - Today's Newsletter
+  - Statistics (Articles, Papers, Posts, Themes)
+  - Archive Browser
+  - Generate Button
+
+================================================================================
+WHAT YOU CAN DO
+================================================================================
+
+✓ View latest AI newsletter
+✓ Browse previous newsletters (archive)
+✓ See statistics about content
+✓ Generate new newsletter manually
+✓ Download newsletters
+✓ See emerging AI themes
+
+================================================================================
+API DOCUMENTATION
+================================================================================
+
+View interactive API docs at:
+
+  http://localhost:8000/docs
+
+This shows all available endpoints and lets you test them.
+
+================================================================================
+GENERATE A NEWSLETTER (One-time)
+================================================================================
+
+Option 1: Via Web Interface
+  - Click "Generate Now" button on dashboard
+
+Option 2: Via Command Line
+  - In a new terminal, run: python main.py
+  - This generates and saves the newsletter
+
+The generated newsletter appears automatically in the frontend after generation.
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Issue: "Port 8000 already in use"
+  → Kill the process or edit api_server.py to use different port
+
+Issue: "Port 3000 already in use"
+  → Run: npm run dev -- -p 3001 (in frontend directory)
+
+Issue: "Backend not responding in frontend"
+  → Make sure python api_server.py is running in Terminal 1
+
+Issue: "No newsletter showing"
+  → Generate one first: python main.py or click Generate button
+
+Issue: "ImportError: No module named"
+  → Run: pip install -r requirements.txt again
+
+Issue: "ANTHROPIC_API_KEY not found"
+  → Check .env file has your API key (already set)
+
+================================================================================
+STRUCTURE
+================================================================================
+
+Terminal 1:
+  python api_server.py
+  ├─> Runs on http://localhost:8000
+  ├─> Serves newsletter data
+  └─> Stays running
+
+Terminal 2:
+  cd frontend && npm run dev
+  ├─> Runs on http://localhost:3000
+  ├─> Shows the dashboard
+  └─> Stays running
+
+Browser:
+  http://localhost:3000
+  └─> Connects to Terminal 1 & Terminal 2
+
+Python Pipeline:
+  python main.py
+  └─> Generates newsletters
+  └─> Can run anytime
+
+================================================================================
+COMPONENTS
+================================================================================
+
+✓ Backend API (FastAPI) - http://localhost:8000
+✓ Frontend UI (Next.js) - http://localhost:3000
+✓ Python Pipeline - Newsletter generation
+✓ Claude Opus 4.6 - Relevance evaluation
+✓ Data Aggregation - News + Papers + Newsletters
+
+All components are fully integrated and tested.
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Keep both terminals running
+2. Open http://localhost:3000 in your browser
+3. Click "Generate Now" to create newsletter
+4. Refresh page to see results
+5. Browse archive or download newsletters
+
+================================================================================
+SUCCESS INDICATORS
+================================================================================
+
+✓ Terminal 1: "Uvicorn running on http://0.0.0.0:8000"
+✓ Terminal 2: "▲ Next.js ... Local: http://localhost:3000"
+✓ Browser: Shows dashboard with newsletter content
+✓ API Docs: Available at http://localhost:8000/docs
+
+All of these together = System is working correctly
+
+================================================================================
+
+Questions? Check:
+  - RUN_INSTRUCTIONS.md (detailed guide)
+  - IMPLEMENTATION_COMPLETE.md (technical overview)
+  - http://localhost:8000/docs (API documentation)
+
+Enjoy your AI newsletter system!
+
+================================================================================

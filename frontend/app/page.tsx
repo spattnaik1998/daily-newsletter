@@ -7,11 +7,32 @@ import NewsletterViewer from '@/components/NewsletterViewer'
 import StatsCard from '@/components/StatsCard'
 import Archive from '@/components/Archive'
 import { useNewsletter } from '@/lib/hooks/useNewsletter'
+import { Download } from 'lucide-react'
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<'latest' | 'archive' | 'stats'>('latest')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [morningBrief, setMorningBrief] = useState<string | null>(null)
+  const [briefLoading, setBriefLoading] = useState(true)
   const { newsletter, loading, stats, error } = useNewsletter()
+
+  // Fetch morning brief
+  useEffect(() => {
+    const fetchBrief = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/morning-brief/latest')
+        if (response.ok) {
+          const data = await response.json()
+          setMorningBrief(data.content)
+        }
+      } catch (err) {
+        console.error('Failed to fetch morning brief:', err)
+      } finally {
+        setBriefLoading(false)
+      }
+    }
+    fetchBrief()
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-950 flex">
@@ -51,6 +72,43 @@ export default function Dashboard() {
                 icon="mail"
                 subtext="from Substack"
               />
+            </div>
+          )}
+
+          {/* Morning Brief */}
+          {activeView === 'latest' && (
+            <div className="mb-12 animate-fade-in">
+              <div className="bg-slate-900 bg-opacity-50 border border-slate-700 rounded-lg p-8">
+                <h2 className="text-2xl font-bold text-cyan-400 mb-6">Executive Morning Brief</h2>
+                {briefLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-8 h-8 border-2 border-accent-cyan border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : morningBrief ? (
+                  <div className="space-y-4">
+                    <div className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed max-h-96 overflow-y-auto">
+                      {morningBrief}
+                    </div>
+                    <button
+                      onClick={() => {
+                        const element = document.createElement('a')
+                        const file = new Blob([morningBrief], { type: 'text/markdown' })
+                        element.href = URL.createObjectURL(file)
+                        element.download = `morning-brief-${new Date().toISOString().split('T')[0]}.md`
+                        document.body.appendChild(element)
+                        element.click()
+                        document.body.removeChild(element)
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                      <Download size={16} />
+                      Download Brief
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-slate-400 text-sm">Morning brief not available. Generate a newsletter to create one.</p>
+                )}
+              </div>
             </div>
           )}
 

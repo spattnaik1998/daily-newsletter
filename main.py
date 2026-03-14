@@ -13,6 +13,10 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 from pipeline.daily_pipeline import DailyPipeline
 from config.settings import OUTPUT_DIR, OUTPUT_FILENAME_TEMPLATE, DATE_FORMAT, LOG_LEVEL, LOG_FORMAT
 
@@ -48,6 +52,17 @@ def main():
         logger.info(f"Saving newsletter to {output_path}")
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(newsletter)
+
+        # Save morning brief if available
+        if metadata.get("morning_brief"):
+            morning_brief_filename = OUTPUT_FILENAME_TEMPLATE.format(
+                date=today_date
+            ).replace("ai-newsletter.md", "morning-brief.md")
+            morning_brief_path = output_dir / morning_brief_filename
+            logger.info(f"Saving morning brief to {morning_brief_path}")
+            with open(morning_brief_path, "w", encoding="utf-8") as f:
+                f.write(metadata["morning_brief"])
+            logger.info(f"✓ Morning brief saved to: {morning_brief_path}")
 
         # Log summary
         pipeline.log_summary(metadata)

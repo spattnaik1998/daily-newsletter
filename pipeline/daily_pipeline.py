@@ -17,6 +17,8 @@ from agents.arxiv_agent import ArxivAgent
 from agents.substack_agent import SubstackAgent
 from agents.summarization_agent import SummarizationAgent
 from agents.newsletter_agent import NewsletterAgent
+from agents.relevance_evaluator import RelevanceEvaluator
+from agents.morning_brief_agent import MorningBriefAgent
 
 # Set up logging
 logging.basicConfig(
@@ -29,13 +31,33 @@ logger = logging.getLogger(__name__)
 class DailyPipeline:
     """Orchestrates the daily newsletter generation pipeline."""
 
-    def __init__(self):
-        """Initialize the pipeline with all agents."""
+    def __init__(self, use_relevance_eval: bool = True):
+        """
+        Initialize the pipeline with all agents.
+
+        Args:
+            use_relevance_eval: Whether to use LLM-based relevance evaluation (default: True)
+        """
         self.news_agent = NewsCrawlerAgent()
         self.arxiv_agent = ArxivAgent()
         self.substack_agent = SubstackAgent()
         self.summarization_agent = SummarizationAgent()
         self.newsletter_agent = NewsletterAgent()
+        self.morning_brief_agent = MorningBriefAgent()
+        self.use_relevance_eval = use_relevance_eval
+
+        # Initialize relevance evaluator if enabled
+        if self.use_relevance_eval:
+            try:
+                self.relevance_evaluator = RelevanceEvaluator()
+                logger.info("✓ Relevance evaluator initialized with Claude API")
+            except ValueError as e:
+                logger.warning(f"Relevance evaluator disabled: {e}")
+                logger.warning("Falling back to basic filtering only")
+                self.use_relevance_eval = False
+                self.relevance_evaluator = None
+        else:
+            self.relevance_evaluator = None
 
     def run(self, hours: int = 24) -> Tuple[str, Dict[str, Any]]:
         """
@@ -46,7 +68,8 @@ class DailyPipeline:
         2. Collect research papers
         3. Collect newsletter posts
         4. Summarize all content
-        5. Generate final newsletter
+        5. Generate morning brief
+        6. Generate final newsletter
 
         Args:
             hours: Number of hours to look back (default: 24)
@@ -70,6 +93,11 @@ class DailyPipeline:
         articles = self.news_agent.run(hours=hours)
         articles = self.news_agent.process_articles(articles)
         articles = self.news_agent.filter_by_date(articles, hours=hours)
+
+        # Apply relevance evaluation
+        if self.use_relevance_eval and self.relevance_evaluator:
+            articles, _ = self.relevance_evaluator.evaluate_sources(articles, "news")
+
         metadata["articles_count"] = len(articles)
         logger.info(f"✓ Fetched {len(articles)} news articles")
 
@@ -78,6 +106,11 @@ class DailyPipeline:
         papers = self.arxiv_agent.run(hours=hours)
         papers = self.arxiv_agent.process_papers(papers)
         papers = self.arxiv_agent.filter_by_relevance(papers)
+
+        # Apply relevance evaluation
+        if self.use_relevance_eval and self.relevance_evaluator:
+            papers, _ = self.relevance_evaluator.evaluate_sources(papers, "papers")
+
         metadata["papers_count"] = len(papers)
         logger.info(f"✓ Fetched {len(papers)} research papers")
 
@@ -86,11 +119,16 @@ class DailyPipeline:
         posts = self.substack_agent.run(hours=hours)
         posts = self.substack_agent.process_posts(posts)
         posts = self.substack_agent.filter_by_date(posts, hours=hours)
+
+        # Apply relevance evaluation
+        if self.use_relevance_eval and self.relevance_evaluator:
+            posts, _ = self.relevance_evaluator.evaluate_sources(posts, "posts")
+
         metadata["posts_count"] = len(posts)
         logger.info(f"✓ Fetched {len(posts)} newsletter posts")
 
         # Step 4: Summarize content
-        logger.info("\n[4/5] Summarizing content...")
+        logger.info("\n[4/6] Summarizing content...")
         articles_bullets = self.summarization_agent.create_article_bullets(articles)
         papers_bullets = self.summarization_agent.create_paper_bullets(papers)
         posts_bullets = self.summarization_agent.create_post_bullets(posts)
@@ -101,8 +139,20 @@ class DailyPipeline:
         logger.info(f"✓ Created {len(posts_bullets)} post bullets")
         logger.info(f"✓ Identified {len(themes)} themes")
 
-        # Step 5: Generate newsletter
-        logger.info("\n[5/5] Generating newsletter...")
+        # Step 5: Generate morning brief
+        logger.info("\n[5/6] Generating executive morning brief...")
+        try:
+            morning_brief = self.morning_brief_agent.generate_brief(
+                articles, papers, posts
+            )
+            metadata["morning_brief"] = morning_brief
+            logger.info("✓ Morning brief generated successfully")
+        except Exception as e:
+            logger.warning(f"Failed to generate morning brief: {e}")
+            metadata["morning_brief"] = ""
+
+        # Step 6: Generate newsletter
+        logger.info("\n[6/6] Generating newsletter...")
         newsletter = self.newsletter_agent.generate(
             articles_bullets, papers_bullets, posts_bullets, themes
         )

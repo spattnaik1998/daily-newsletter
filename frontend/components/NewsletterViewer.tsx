@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Download, Copy, Share2, Eye, FileText, Zap } from 'lucide-react'
+import { Download, Copy, Share2, Eye, FileText, Sparkles } from 'lucide-react'
 
 interface NewsletterViewerProps {
   content: string
@@ -27,9 +27,11 @@ export default function NewsletterViewer({ content, metadata }: NewsletterViewer
 
   const handleDownload = (format: 'md' | 'txt') => {
     const element = document.createElement('a')
-    const file = new Blob([content], { type: 'text/plain' })
+    const file = new Blob([content], { type: format === 'md' ? 'text/markdown' : 'text/plain' })
     element.href = URL.createObjectURL(file)
-    element.download = `newsletter.${format}`
+    const now = new Date()
+    const dateStr = now.toISOString().split('T')[0]
+    element.download = `newsletter-${dateStr}.${format}`
     document.body.appendChild(element)
     element.click()
     document.body.removeChild(element)
@@ -37,104 +39,134 @@ export default function NewsletterViewer({ content, metadata }: NewsletterViewer
 
   return (
     <div className="space-y-6">
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-        <div className="flex items-center gap-3">
+      {/* Controls */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('preview')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
-              viewMode === 'preview'
-                ? 'bg-accent-cyan text-slate-950'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className="px-3 py-1.5 rounded-lg transition-all text-xs font-medium"
+            style={{
+              background: viewMode === 'preview' ? 'rgba(0, 245, 255, 0.15)' : 'transparent',
+              color: viewMode === 'preview' ? '#00f5ff' : '#94a3b8',
+              border: viewMode === 'preview' ? '1px solid rgba(0, 245, 255, 0.3)' : '1px solid rgba(0, 245, 255, 0.1)',
+            }}
           >
-            <Eye size={16} />
+            <Eye size={14} className="inline mr-1" />
             Preview
           </button>
           <button
             onClick={() => setViewMode('raw')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
-              viewMode === 'raw'
-                ? 'bg-accent-cyan text-slate-950'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className="px-3 py-1.5 rounded-lg transition-all text-xs font-medium"
+            style={{
+              background: viewMode === 'raw' ? 'rgba(0, 245, 255, 0.15)' : 'transparent',
+              color: viewMode === 'raw' ? '#00f5ff' : '#94a3b8',
+              border: viewMode === 'raw' ? '1px solid rgba(0, 245, 255, 0.3)' : '1px solid rgba(0, 245, 255, 0.1)',
+            }}
           >
-            <FileText size={16} />
+            <FileText size={14} className="inline mr-1" />
             Raw
           </button>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium"
+            className="px-3 py-1.5 rounded-lg transition-all text-xs font-medium text-slate-400 hover:text-slate-300"
+            style={{
+              border: '1px solid rgba(0, 245, 255, 0.1)',
+            }}
             title="Copy to clipboard"
           >
-            <Copy size={16} />
-            {copied ? 'Copied!' : 'Copy'}
+            <Copy size={14} className="inline mr-1" />
+            {copied ? 'Copied' : 'Copy'}
           </button>
-          <div className="relative group">
-            <button className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium">
-              <Download size={16} />
-              Download
-            </button>
-            <div className="absolute right-0 mt-2 w-40 bg-slate-900 border border-slate-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
-              <button
-                onClick={() => handleDownload('md')}
-                className="w-full text-left px-4 py-2 hover:bg-slate-800 transition-colors text-sm text-slate-300 first:rounded-t-lg"
-              >
-                Markdown (.md)
-              </button>
-              <button
-                onClick={() => handleDownload('txt')}
-                className="w-full text-left px-4 py-2 hover:bg-slate-800 transition-colors text-sm text-slate-300 last:rounded-b-lg"
-              >
-                Text (.txt)
-              </button>
-            </div>
-          </div>
-          <button className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium">
-            <Share2 size={16} />
-            Share
+          <button
+            onClick={() => handleDownload('md')}
+            className="px-3 py-1.5 rounded-lg transition-all text-xs font-medium text-slate-400 hover:text-slate-300"
+            style={{
+              border: '1px solid rgba(0, 245, 255, 0.1)',
+            }}
+          >
+            <Download size={14} className="inline mr-1" />
+            Download
           </button>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="border border-slate-700 rounded-lg overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950">
+      <div className="rounded-lg overflow-hidden" style={{
+        background: 'rgba(0, 245, 255, 0.02)',
+        border: '1px solid rgba(0, 245, 255, 0.08)',
+      }}>
         {viewMode === 'preview' ? (
-          <article className="prose prose-invert max-w-none p-8 lg:p-12">
-            <div className="prose-headings:font-display prose-headings:text-cream-100 prose-p:text-slate-300 prose-a:text-accent-cyan hover:prose-a:text-accent-teal prose-strong:text-cream-100 prose-code:text-accent-gold prose-pre:bg-slate-800 prose-ul:text-slate-300 prose-ol:text-slate-300 prose-li:text-slate-300">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-            </div>
+          <article className="p-6 lg:p-8 max-w-none prose prose-invert prose-sm">
+            <style>{`
+              .prose {
+                --tw-prose-body: #cbd5e1;
+                --tw-prose-headings: #00f5ff;
+                --tw-prose-lead: #cbd5e1;
+                --tw-prose-links: #00f5ff;
+                --tw-prose-bold: #f1f5f9;
+                --tw-prose-counters: #f1f5f9;
+                --tw-prose-bullets: #00f5ff;
+                --tw-prose-hr: rgba(0, 245, 255, 0.15);
+                --tw-prose-quotes: #cbd5e1;
+                --tw-prose-quote-borders: rgba(0, 245, 255, 0.2);
+                --tw-prose-captions: #94a3b8;
+                --tw-prose-code: #00f5ff;
+                --tw-prose-pre-code: #cbd5e1;
+                --tw-prose-pre-bg: rgba(15, 23, 42, 0.6);
+                --tw-prose-pre-border: rgba(0, 245, 255, 0.1);
+                --tw-prose-th-borders: rgba(0, 245, 255, 0.15);
+                --tw-prose-td-borders: rgba(0, 245, 255, 0.08);
+              }
+
+              .prose h1 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; color: #00f5ff; }
+              .prose h2 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #00f5ff; }
+              .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #00d4ff; }
+
+              .prose a { text-decoration: none; border-bottom: 1px solid rgba(0, 245, 255, 0.3); transition: all 0.2s; }
+              .prose a:hover { color: #00d4ff; border-bottom-color: #00d4ff; }
+
+              .prose pre { border-radius: 0.375rem; overflow-x: auto; padding: 1rem; border: 1px solid rgba(0, 245, 255, 0.1); }
+              .prose code { font-size: 0.8rem; }
+
+              .prose ul, .prose ol { margin-left: 1.25rem; }
+              .prose li { margin-top: 0.25rem; margin-bottom: 0.25rem; }
+
+              .prose hr { border: none; border-top: 1px solid rgba(0, 245, 255, 0.15); margin: 1.5rem 0; }
+            `}</style>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
           </article>
         ) : (
-          <div className="p-8 lg:p-12 overflow-x-auto">
-            <pre className="font-mono text-sm text-slate-300 leading-relaxed">
+          <div className="p-6 lg:p-8 overflow-x-auto">
+            <pre className="font-mono text-xs text-slate-300 leading-relaxed">
               <code>{content}</code>
             </pre>
           </div>
         )}
       </div>
 
-      {/* Metadata Footer */}
-      {metadata && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-slate-800 border border-slate-700 rounded-lg">
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Articles</p>
-            <p className="text-2xl font-display font-bold text-accent-teal">{metadata.articles || 0}</p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Papers</p>
-            <p className="text-2xl font-display font-bold text-accent-cyan">{metadata.papers || 0}</p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Posts</p>
-            <p className="text-2xl font-display font-bold text-accent-gold">{metadata.posts || 0}</p>
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Themes</p>
-            <p className="text-2xl font-display font-bold text-accent-rose">{metadata.themes?.length || 0}</p>
+      {/* Themes Section */}
+      {metadata?.themes && metadata.themes.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Emerging Themes</h3>
+          <div className="flex flex-wrap gap-2">
+            {metadata.themes.map((theme) => (
+              <span
+                key={theme}
+                className="px-3 py-1 rounded-full text-xs font-medium"
+                style={{
+                  background: 'rgba(0, 245, 255, 0.1)',
+                  color: '#00f5ff',
+                  border: '1px solid rgba(0, 245, 255, 0.2)',
+                }}
+              >
+                {theme}
+              </span>
+            ))}
           </div>
         </div>
       )}
