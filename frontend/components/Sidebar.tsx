@@ -3,16 +3,21 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X, Home, Archive, Settings, LogOut, Zap, BookOpen } from 'lucide-react'
+import { LucideIcon } from 'lucide-react'
 
 interface SidebarProps {
   isOpen: boolean
   onToggle: () => void
 }
 
+type MenuItem =
+  | { label: string; icon: LucideIcon; href: string; badge?: string | null }
+  | { label: string; icon: LucideIcon; submenu: Array<{ label: string; href: string }> }
+
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       label: 'Dashboard',
       icon: Home,
@@ -64,7 +69,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-2">
           {menuItems.map((item, idx) => (
             <div key={idx}>
-              {item.submenu ? (
+              {'submenu' in item ? (
                 <div>
                   <button
                     onClick={() => setExpandedMenu(expandedMenu === item.label ? null : item.label)}
@@ -93,7 +98,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 </div>
               ) : (
                 <Link
-                  href={item.href || '#'}
+                  href={item.href}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     item.badge
                       ? 'bg-accent-gold bg-opacity-10 text-accent-gold'
