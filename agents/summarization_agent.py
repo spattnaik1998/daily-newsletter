@@ -21,7 +21,12 @@ class SummarizationAgent:
     def __init__(self):
         """Initialize the SummarizationAgent with Anthropic client."""
         try:
-            self.client = anthropic.Anthropic()
+            import os
+            api_key = os.getenv("ANTHROPIC_API_KEY")
+            if api_key:
+                self.client = anthropic.Anthropic(api_key=api_key)
+            else:
+                self.client = anthropic.Anthropic()
             self.model = "claude-haiku-4-5-20251001"
             self.use_ai = True
         except Exception as e:
