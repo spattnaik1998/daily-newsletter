@@ -12,6 +12,7 @@ import logging
 from typing import List, Dict, Any
 
 from connectors.substack_connector import SubstackConnector
+from config.settings import SUBSTACK_HOURS_LOOKBACK
 
 logger = logging.getLogger(__name__)
 
@@ -23,17 +24,17 @@ class SubstackAgent:
         """Initialize the SubstackAgent."""
         self.connector = SubstackConnector()
 
-    def run(self, hours: int = 24) -> List[Dict[str, Any]]:
+    def run(self, hours: int = None) -> List[Dict[str, Any]]:
         """
         Execute the Substack agent.
 
         This method:
         1. Fetches recent posts from configured AI Substack newsletters
         2. Extracts post metadata
-        3. Filters posts from the last 24 hours
+        3. Filters posts from the last 7 days (or specified time period)
 
         Args:
-            hours: Number of hours to look back (default: 24)
+            hours: Number of hours to look back (default: 168 = 7 days for weekly newsletters)
 
         Returns:
             List of post metadata dictionaries containing:
@@ -45,6 +46,10 @@ class SubstackAgent:
             - newsletter_name: Name of the newsletter
             - source: "Substack"
         """
+        # Use Substack-specific default (7 days) if hours not specified
+        if hours is None:
+            hours = SUBSTACK_HOURS_LOOKBACK
+
         logger.info("Starting Substack agent")
 
         posts = self.connector.fetch_recent_posts(hours=hours)

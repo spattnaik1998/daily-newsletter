@@ -11,6 +11,7 @@ from typing import List, Dict, Any
 import requests
 
 from config.settings import ARXIV_API_BASE_URL, ARXIV_CATEGORIES, ARXIV_MAX_RESULTS, ARXIV_TIMEOUT
+from utils.cache import get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class ArxivConnector:
 
     def _fetch_category(self, category: str, cutoff_date: datetime) -> List[Dict[str, Any]]:
         """
-        Fetch papers from a specific arXiv category.
+        Fetch papers from a specific arXiv category with caching.
 
         Args:
             category: arXiv category code (e.g., 'cs.AI')
@@ -64,6 +65,14 @@ class ArxivConnector:
             List of paper metadata dictionaries
         """
         logger.info(f"Fetching papers from category: {category}")
+
+        # Try cache first (using category as key)
+        cache_key = f"arxiv:{category}"
+        cache = get_cache()
+        cached_papers = cache.get(cache_key)
+        if cached_papers is not None:
+            logger.info(f"Using cached data for {category} ({len(cached_papers)} papers)")
+            return cached_papers
 
         # Build query: recent papers in category
         query = f"cat:{category} AND submittedDate:[{cutoff_date.strftime('%Y%m%d0000')} TO 9999999999]"
@@ -78,7 +87,12 @@ class ArxivConnector:
         try:
             response = requests.get(self.base_url, params=params, timeout=self.timeout)
             response.raise_for_status()
-            return self._parse_arxiv_response(response.text)
+            papers = self._parse_arxiv_response(response.text)
+
+            # Cache the results
+            cache.set(cache_key, papers)
+
+            return papers
         except requests.RequestException as e:
             logger.error(f"Request failed for category {category}: {e}")
             return []

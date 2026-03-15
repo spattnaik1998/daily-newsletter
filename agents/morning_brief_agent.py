@@ -9,6 +9,7 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import anthropic
+from config.settings import USER_PROFILE
 
 logger = logging.getLogger(__name__)
 
@@ -105,12 +106,24 @@ class MorningBriefAgent:
         """
         today = datetime.utcnow().strftime("%A, %B %d, %Y")
 
-        prompt = f"""You are a sharp, energetic personal assistant tasked with keeping an executive
+        # Build user context from profile
+        user_name = USER_PROFILE.get("name", "User")
+        interests = ", ".join(USER_PROFILE.get("interests", []))
+        expertise = USER_PROFILE.get("expertise_level", "intermediate")
+        learning_goal = USER_PROFILE.get("learning_goal", "stay informed")
+
+        prompt = f"""You are a sharp, energetic personal assistant tasked with keeping {user_name}
 ahead of the game in AI. Your job is to synthesize the day's most critical AI developments
 into a compelling morning briefing that's authoritative, engaging, and actionable.
 
+**About {user_name}:**
+- Interests: {interests}
+- Expertise Level: {expertise}
+- Learning Goal: {learning_goal}
+
+Prioritize developments related to their interests. Explain technical concepts at their level.
 Write like you're delivering the morning news—confident, clear, and compelling.
-This person depends on you to surface what matters. Include:
+{user_name} depends on you to surface what matters. Include:
 
 1. **Opening Hook** - Start with the single most important development today (one paragraph max)
 2. **The Three Things You Need to Know** - Three key takeaways that move the needle
@@ -118,7 +131,7 @@ This person depends on you to surface what matters. Include:
 4. **Research That Matters** - 2-3 academic/research papers worth watching
 5. **Closing Perspective** - Your take on where this leaves the industry today
 
-Be direct. No fluff. Use vivid language. Make clear why each item matters to staying ahead.
+Be direct. No fluff. Use vivid language. Make clear why each item matters to {user_name}'s goals.
 
 Today's AI Landscape:
 {articles}
@@ -126,7 +139,7 @@ Today's AI Landscape:
 {posts}
 
 Write the briefing in markdown format. Keep the tone personal but professional—like your
-best source of AI intelligence is talking directly to you. This should take 2-3 minutes to read."""
+best source of AI intelligence is talking directly to {user_name}. This should take 2-3 minutes to read."""
 
         try:
             response = self.client.messages.create(

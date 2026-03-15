@@ -27,6 +27,7 @@ SUBSTACK_TIMEOUT = 10
 
 # Article Filtering
 HOURS_LOOKBACK = 24  # Fetch content from last 24 hours
+SUBSTACK_HOURS_LOOKBACK = 168  # Substack uses 7-day lookback (weekly newsletters)
 MAX_SOURCE_AGE_DAYS = 3  # Maximum age of sources: 2-3 days (evaluated sources)
 
 # API Settings - Anthropic/Claude
@@ -44,3 +45,11 @@ OUTPUT_FILENAME_TEMPLATE = "{date}-ai-newsletter.md"
 # Logging
 LOG_LEVEL = "INFO"
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# User Profile for Personalization
+USER_PROFILE = {
+    "name": "User",
+    "interests": ["LLMs", "AI safety", "practical applications", "open-source AI"],
+    "expertise_level": "intermediate",
+    "learning_goal": "master AI developments daily"
+}

@@ -17,6 +17,7 @@ from time import mktime
 from calendar import timegm
 
 from config.settings import APIFY_TIMEOUT
+from utils.cache import get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,55 @@ class ApifyConnector:
                 "url": "https://news.ycombinator.com/",
                 "rss_url": "https://news.ycombinator.com/rss",
                 "priority": 2,
+            },
+            # Company blogs - official sources with latest developments
+            {
+                "name": "OpenAI Blog",
+                "url": "https://openai.com/blog/",
+                "rss_url": "https://openai.com/blog/rss.xml",
+                "priority": 1,
+            },
+            {
+                "name": "Anthropic News",
+                "url": "https://www.anthropic.com/news",
+                "rss_url": "https://www.anthropic.com/news/rss.xml",
+                "priority": 1,
+            },
+            {
+                "name": "DeepMind Blog",
+                "url": "https://deepmind.google/discover/blog/",
+                "rss_url": "https://deepmind.google/discover/blog/rss.xml",
+                "priority": 1,
+            },
+            {
+                "name": "Meta AI Blog",
+                "url": "https://ai.meta.com/blog/",
+                "rss_url": "https://ai.meta.com/blog/rss",
+                "priority": 1,
+            },
+            {
+                "name": "Mistral AI News",
+                "url": "https://mistral.ai/news/",
+                "rss_url": "https://mistral.ai/news/rss.xml",
+                "priority": 1,
+            },
+            {
+                "name": "Hugging Face Blog",
+                "url": "https://huggingface.co/blog",
+                "rss_url": "https://huggingface.co/blog/feed.xml",
+                "priority": 1,
+            },
+            {
+                "name": "Google AI Blog",
+                "url": "https://blog.google/technology/ai/",
+                "rss_url": "https://blog.google/technology/ai/rss",
+                "priority": 1,
+            },
+            {
+                "name": "Microsoft AI Blog",
+                "url": "https://blogs.microsoft.com/ai/",
+                "rss_url": "https://blogs.microsoft.com/ai/feed",
+                "priority": 1,
             },
         ]
 
@@ -190,6 +240,7 @@ class ApifyConnector:
         """
         Fetch articles from RSS feed with STRICT timestamp enforcement.
         ONLY articles published in last 3 days are returned.
+        Uses caching to avoid redundant fetches.
 
         Args:
             source: Source metadata with RSS URL
@@ -205,6 +256,13 @@ class ApifyConnector:
             if not rss_url:
                 logger.warning(f"No RSS URL for {source.get('name')}")
                 return []
+
+            # Try cache first
+            cache = get_cache()
+            cached_articles = cache.get(rss_url)
+            if cached_articles is not None:
+                logger.info(f"Using cached data for {rss_url} ({len(cached_articles)} articles)")
+                return cached_articles
 
             logger.info(f"Fetching RSS: {rss_url}")
             feed = feedparser.parse(rss_url)
@@ -274,6 +332,11 @@ class ApifyConnector:
                 f"{source.get('name')}: {len(articles)} RECENT, "
                 f"{rejected_count} rejected (too old/invalid)"
             )
+
+            # Cache the results
+            cache = get_cache()
+            cache.set(rss_url, articles)
+
             return articles
 
         except ImportError:

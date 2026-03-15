@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import requests
 
 from config.settings import SUBSTACK_TIMEOUT
+from utils.cache import get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ class SubstackConnector:
 
         # Popular AI Substack newsletters with RSS feed URLs
         self.newsletters = [
+            # Core AI newsletters
             {
                 "name": "Import AI",
                 "subdomain": "importai",
@@ -47,6 +49,55 @@ class SubstackConnector:
                 "subdomain": "bensbites",
                 "url": "https://bensbites.substack.com",
                 "rss_url": "https://bensbites.substack.com/feed",
+            },
+            # Specialized AI research and analysis
+            {
+                "name": "Interconnects",
+                "subdomain": "interconnects",
+                "url": "https://interconnects.substack.com",
+                "rss_url": "https://interconnects.substack.com/feed",
+            },
+            {
+                "name": "Ahead of AI",
+                "subdomain": "aheadofai",
+                "url": "https://aheadofai.substack.com",
+                "rss_url": "https://aheadofai.substack.com/feed",
+            },
+            {
+                "name": "The Gradient",
+                "subdomain": "thegradientpub",
+                "url": "https://thegradientpub.substack.com",
+                "rss_url": "https://thegradientpub.substack.com/feed",
+            },
+            {
+                "name": "AI Snake Oil",
+                "subdomain": "aisnakeoil",
+                "url": "https://aisnakeoil.substack.com",
+                "rss_url": "https://aisnakeoil.substack.com/feed",
+            },
+            {
+                "name": "NLP News",
+                "subdomain": "nlpnews",
+                "url": "https://newsletter.ruder.io",
+                "rss_url": "https://newsletter.ruder.io/feed",
+            },
+            {
+                "name": "The Batch",
+                "subdomain": "thebatch",
+                "url": "https://www.deeplearning.ai/the-batch/",
+                "rss_url": "https://www.deeplearning.ai/the-batch/rss",
+            },
+            {
+                "name": "ML Street Journal",
+                "subdomain": "mlstreetjournal",
+                "url": "https://mlstreetjournal.substack.com",
+                "rss_url": "https://mlstreetjournal.substack.com/feed",
+            },
+            {
+                "name": "Jack Clark's Newsletter",
+                "subdomain": "jackclark",
+                "url": "https://jack-clark.net",
+                "rss_url": "https://jack-clark.net/feed",
             },
         ]
 
@@ -85,7 +136,7 @@ class SubstackConnector:
         self, newsletter: Dict[str, str], cutoff_date: datetime
     ) -> List[Dict[str, Any]]:
         """
-        Fetch posts from Substack RSS feed.
+        Fetch posts from Substack RSS feed with caching.
 
         Args:
             newsletter: Newsletter metadata with RSS URL
@@ -100,6 +151,13 @@ class SubstackConnector:
             rss_url = newsletter.get("rss_url")
             if not rss_url:
                 return []
+
+            # Try cache first
+            cache = get_cache()
+            cached_posts = cache.get(rss_url)
+            if cached_posts is not None:
+                logger.info(f"Using cached data for {rss_url} ({len(cached_posts)} posts)")
+                return cached_posts
 
             logger.info(f"Fetching RSS: {rss_url}")
             feed = feedparser.parse(rss_url)
@@ -139,6 +197,11 @@ class SubstackConnector:
                     continue
 
             logger.info(f"Fetched {len(posts)} posts from {newsletter['name']}")
+
+            # Cache the results
+            cache = get_cache()
+            cache.set(rss_url, posts)
+
             return posts
 
         except ImportError:
