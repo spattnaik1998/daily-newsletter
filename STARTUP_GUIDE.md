@@ -39,6 +39,10 @@ Visit: `http://localhost:3000`
 - **npm**: 9.0 or higher
 - **RAM**: 2GB minimum (4GB recommended)
 - **Disk Space**: 500MB for dependencies + 100MB for newsletters
+- **Anthropic API Key** (optional): For Claude Haiku intelligent summarization
+  - Get one at: https://console.anthropic.com/
+  - Set as environment variable: `ANTHROPIC_API_KEY=your-key`
+  - Without it, the system falls back to text extraction
 
 ---
 
@@ -71,6 +75,12 @@ pip install -r requirements.txt
 
 # Create output directory for newsletters
 mkdir -p output/newsletters output/cache
+
+# Optional: Set up environment variables
+# For Claude Haiku intelligent summarization (optional):
+export ANTHROPIC_API_KEY="your-anthropic-api-key"  # macOS/Linux
+# or on Windows:
+# set ANTHROPIC_API_KEY=your-anthropic-api-key
 ```
 
 ### Frontend Setup
