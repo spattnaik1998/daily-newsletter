@@ -1,0 +1,52 @@
+{
+  "url": "https://importai.substack.com/feed",
+  "cached_at": "2026-03-15T15:19:58.925471",
+  "data": [
+    {
+      "title": "Import AI 448: AI R&D; Bytedance's CUDA-writing agent; on-device satellite AI",
+      "url": "https://importai.substack.com/p/import-ai-448-ai-r-and-d-bytedances",
+      "publish_date": "Mon, 09 Mar 2026 12:45:54 GMT",
+      "summary": "If Ukraine is the first major drone war, when will there be the first major AI war?",
+      "author": "Import AI",
+      "newsletter_name": "Import AI",
+      "source": "Substack"
+    },
+    {
+      "title": "Import AI 447: The AGI economy; testing AIs with generated games; and agent ecologies",
+      "url": "https://importai.substack.com/p/import-ai-447-the-agi-economy-testing",
+      "publish_date": "Mon, 02 Mar 2026 13:45:27 GMT",
+      "summary": "What might a superintelligence arcology be like?",
+      "author": "Import AI",
+      "newsletter_name": "Import AI",
+      "source": "Substack"
+    },
+    {
+      "title": "Import AI 446: Nuclear LLMs; China's big AI benchmark; measurement and AI policy",
+      "url": "https://importai.substack.com/p/import-ai-446-nuclear-llms-chinas",
+      "publish_date": "Mon, 23 Feb 2026 13:31:18 GMT",
+      "summary": "Will AIs be jealous of one another?",
+      "author": "Import AI",
+      "newsletter_name": "Import AI",
+      "source": "Substack"
+    },
+    {
+      "title": "Import AI 445: Timing superintelligence; AIs solve frontier math proofs; a new ML research benchmark",
+      "url": "https://importai.substack.com/p/import-ai-445-timing-superintelligence",
+      "publish_date": "Mon, 16 Feb 2026 14:01:19 GMT",
+      "summary": "Will 2026 be looked back on as the pivotal year for making decisions about the singularity?",
+      "author": "Import AI",
+      "newsletter_name": "Import AI",
+      "source": "Substack"
+    },
+    {
+      "title": "Import AI 444: LLM societies; Huawei makes kernels with AI; ChipBench",
+      "url": "https://importai.substack.com/p/import-ai-444-llm-societies-huawei",
+      "publish_date": "Mon, 09 Feb 2026 14:03:34 GMT",
+      "summary": "How can you quantify creativity?",
+      "author": "Import AI",
+      "newsletter_name": "Import AI",
+      "source": "Substack"
+    }
+  ],
+  "count": 5
+}

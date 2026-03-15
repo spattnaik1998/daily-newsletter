@@ -1,0 +1,52 @@
+{
+  "url": "https://thesequence.substack.com/feed",
+  "cached_at": "2026-03-15T15:19:59.669199",
+  "data": [
+    {
+      "title": "The Sequence Radar #824: Last Week in AI: Sovereign Lobsters, Self-Coding Agents, and Gigawatt Factories",
+      "url": "https://thesequence.substack.com/p/the-sequence-radar-824-last-week",
+      "publish_date": "Sun, 15 Mar 2026 11:02:26 GMT",
+      "summary": "Major releases from Google and Anthropic, a fun project from Karpathy and massive compute deals.",
+      "author": "The Sequence",
+      "newsletter_name": "The Sequence",
+      "source": "Substack"
+    },
+    {
+      "title": "The Sequence Opinion #823: SaaSmagedon, Is SaaS Dead?: Vibe Coding, Agentic Engineering, and the Collapse of the Code Moat",
+      "url": "https://thesequence.substack.com/p/the-sequence-opinion-823-saasmagedon",
+      "publish_date": "Thu, 12 Mar 2026 11:00:27 GMT",
+      "summary": "The end of SaaS might be exagerated. Right?",
+      "author": "The Sequence",
+      "newsletter_name": "The Sequence",
+      "source": "Substack"
+    },
+    {
+      "title": "The Sequence AI of the Week #822: Inside GPT-5.4: When Language Models Start Acting Like Operating Systems",
+      "url": "https://thesequence.substack.com/p/the-sequence-ai-of-the-week-822-inside",
+      "publish_date": "Wed, 11 Mar 2026 11:10:15 GMT",
+      "summary": "A technical deep dive into OpenAI's latest model.",
+      "author": "The Sequence",
+      "newsletter_name": "The Sequence",
+      "source": "Substack"
+    },
+    {
+      "title": "The Sequence Knowledge #821: 4D and World Models and the Amazing DeepMind D4RT",
+      "url": "https://thesequence.substack.com/p/the-sequence-knowledge-821-4d-and",
+      "publish_date": "Tue, 10 Mar 2026 11:02:47 GMT",
+      "summary": "One of the most exciting areas in world models.",
+      "author": "The Sequence",
+      "newsletter_name": "The Sequence",
+      "source": "Substack"
+    },
+    {
+      "title": "The Sequence Radar #820: GPT-5.4, Cursor, and the New Desktop",
+      "url": "https://thesequence.substack.com/p/the-sequence-radar-820-gpt-54-cursor",
+      "publish_date": "Sun, 08 Mar 2026 11:02:14 GMT",
+      "summary": "A week of massive developments in agentic AI.",
+      "author": "The Sequence",
+      "newsletter_name": "The Sequence",
+      "source": "Substack"
+    }
+  ],
+  "count": 5
+}

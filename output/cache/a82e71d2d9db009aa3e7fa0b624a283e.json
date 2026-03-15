@@ -1,0 +1,52 @@
+{
+  "url": "https://newsletter.ruder.io/feed",
+  "cached_at": "2026-03-15T15:20:04.135612",
+  "data": [
+    {
+      "title": "The Evolving Landscape of LLM Evaluation",
+      "url": "https://newsletter.ruder.io/p/the-evolving-landscape-of-llm-evaluation",
+      "publish_date": "Mon, 13 May 2024 18:54:25 GMT",
+      "summary": "Throughout recent years, LLM capabilities have outpaced evaluation benchmarks. This is not a new development. What is new is that the set of standard LLM evals has further narrowed\u2014and there are qu...",
+      "author": "NLP News",
+      "newsletter_name": "NLP News",
+      "source": "Substack"
+    },
+    {
+      "title": "Command R+",
+      "url": "https://newsletter.ruder.io/p/command-r",
+      "publish_date": "Mon, 15 Apr 2024 17:23:52 GMT",
+      "summary": "The Top Open-Weights LLM + RAG and Multilingual Support",
+      "author": "NLP News",
+      "newsletter_name": "NLP News",
+      "source": "Substack"
+    },
+    {
+      "title": "True Zero-shot MT",
+      "url": "https://newsletter.ruder.io/p/true-zero-shot-mt",
+      "publish_date": "Tue, 27 Feb 2024 09:46:32 GMT",
+      "summary": "Teaching Machines a New Language Like Humans",
+      "author": "NLP News",
+      "newsletter_name": "NLP News",
+      "source": "Substack"
+    },
+    {
+      "title": "Thoughts on the 2024 AI Job Market",
+      "url": "https://newsletter.ruder.io/p/thoughts-on-the-2024-ai-job-market",
+      "publish_date": "Mon, 12 Feb 2024 09:51:17 GMT",
+      "summary": "And Why I Joined Cohere",
+      "author": "NLP News",
+      "newsletter_name": "NLP News",
+      "source": "Substack"
+    },
+    {
+      "title": "The Big Picture of AI Research",
+      "url": "https://newsletter.ruder.io/p/the-big-picture-of-ai-research",
+      "publish_date": "Thu, 18 Jan 2024 07:09:49 GMT",
+      "summary": "A Workshop Retrospective",
+      "author": "NLP News",
+      "newsletter_name": "NLP News",
+      "source": "Substack"
+    }
+  ],
+  "count": 5
+}

@@ -1,0 +1,52 @@
+{
+  "url": "https://thegradientpub.substack.com/feed",
+  "cached_at": "2026-03-15T15:20:01.907518",
+  "data": [
+    {
+      "title": "After Orthogonality: Virtue-Ethical Agency and AI Alignment",
+      "url": "https://thegradientpub.substack.com/p/the-reasonable-effectiveness-of-virtue",
+      "publish_date": "Thu, 19 Feb 2026 16:02:41 GMT",
+      "summary": "Peli Grietzer on eudaimonic rationality and its implications for AI alignment.",
+      "author": "The Gradient",
+      "newsletter_name": "The Gradient",
+      "source": "Substack"
+    },
+    {
+      "title": "2025 in AI, with Nathan Benaich",
+      "url": "https://thegradientpub.substack.com/p/nathan-benaich-2025",
+      "publish_date": "Thu, 22 Jan 2026 16:30:59 GMT",
+      "summary": "AI in 2025, going into 2026",
+      "author": "The Gradient",
+      "newsletter_name": "The Gradient",
+      "source": "Substack"
+    },
+    {
+      "title": "Iason Gabriel: Value Alignment and the Ethics of Advanced AI Systems",
+      "url": "https://thegradientpub.substack.com/p/iason-gabriel-value-alignment-ethics",
+      "publish_date": "Wed, 26 Nov 2025 19:36:07 GMT",
+      "summary": "How do we develop AI systems reflective of human values? How do we determine those values?",
+      "author": "The Gradient",
+      "newsletter_name": "The Gradient",
+      "source": "Substack"
+    },
+    {
+      "title": "AGI is Not Multimodal",
+      "url": "https://thegradientpub.substack.com/p/agi-is-not-multimodal",
+      "publish_date": "Wed, 04 Jun 2025 14:27:40 GMT",
+      "summary": "Benjamin Spiegel on what disembodied definitions of AGI miss",
+      "author": "The Gradient",
+      "newsletter_name": "The Gradient",
+      "source": "Substack"
+    },
+    {
+      "title": "2024 in AI, with Nathan Benaich",
+      "url": "https://thegradientpub.substack.com/p/state-of-ai-2024",
+      "publish_date": "Thu, 26 Dec 2024 16:30:37 GMT",
+      "summary": "all the (AI) news that's fit to print (record).",
+      "author": "The Gradient",
+      "newsletter_name": "The Gradient",
+      "source": "Substack"
+    }
+  ],
+  "count": 5
+}

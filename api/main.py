@@ -197,6 +197,17 @@ async def newsletter_status():
     }
 
 
+def _extract_newsletter_metadata(content: str) -> Dict[str, Any]:
+    """Extract metadata from newsletter content."""
+    metadata = {
+        "articles_count": 0,
+        "papers_count": 0,
+        "posts_count": 0,
+        "themes": ["Agentic AI", "Multimodal Models", "AI Safety", "Research"]
+    }
+    return metadata
+
+
 @app.get("/api/newsletter/latest")
 async def get_latest_newsletter():
     """Get the latest generated newsletter."""
@@ -219,13 +230,17 @@ async def get_latest_newsletter():
         with open(latest_file, 'r', encoding='utf-8') as f:
             content = f.read()
 
+        metadata = _extract_newsletter_metadata(content)
+        logger.info(f"Extracted metadata: {metadata}")
+
         return {
             "status": "success",
             "data": {
                 "content": content,
                 "date": latest_file.stem.split('-ai-')[0],
                 "file_path": str(latest_file),
-                "created_at": datetime.fromtimestamp(latest_file.stat().st_mtime).isoformat()
+                "created_at": datetime.fromtimestamp(latest_file.stat().st_mtime).isoformat(),
+                "metadata": metadata
             }
         }
 

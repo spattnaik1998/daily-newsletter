@@ -1,0 +1,52 @@
+{
+  "url": "https://bensbites.substack.com/feed",
+  "cached_at": "2026-03-15T15:20:00.584378",
+  "data": [
+    {
+      "title": "How (and what) I'm building this week",
+      "url": "https://www.bensbites.com/p/how-and-what-im-building-this-week",
+      "publish_date": "Fri, 13 Mar 2026 16:29:11 GMT",
+      "summary": "my stack, instructions, tools and skills",
+      "author": "Ben's Bites",
+      "newsletter_name": "Ben's Bites",
+      "source": "Substack"
+    },
+    {
+      "title": "Make any media searchable",
+      "url": "https://www.bensbites.com/p/make-any-media-searchable",
+      "publish_date": "Thu, 12 Mar 2026 14:03:20 GMT",
+      "summary": "web access CLIs, sandboxes and another openclaw clone",
+      "author": "Ben's Bites",
+      "newsletter_name": "Ben's Bites",
+      "source": "Substack"
+    },
+    {
+      "title": "Just use GPT-5.4 xhigh",
+      "url": "https://www.bensbites.com/p/just-use-gpt-54-xhigh",
+      "publish_date": "Tue, 10 Mar 2026 14:25:37 GMT",
+      "summary": "workshop recording inside",
+      "author": "Ben's Bites",
+      "newsletter_name": "Ben's Bites",
+      "source": "Substack"
+    },
+    {
+      "title": "Google apps in the terminal",
+      "url": "https://www.bensbites.com/p/google-apps-in-the-terminal",
+      "publish_date": "Thu, 05 Mar 2026 14:15:58 GMT",
+      "summary": "two new models, lot of rumours and revenue",
+      "author": "Ben's Bites",
+      "newsletter_name": "Ben's Bites",
+      "source": "Substack"
+    },
+    {
+      "title": "Models on the march",
+      "url": "https://www.bensbites.com/p/models-on-the-march",
+      "publish_date": "Tue, 03 Mar 2026 14:03:25 GMT",
+      "summary": "50M paying consumers for ChatGPT",
+      "author": "Ben's Bites",
+      "newsletter_name": "Ben's Bites",
+      "source": "Substack"
+    }
+  ],
+  "count": 5
+}

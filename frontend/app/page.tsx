@@ -38,8 +38,12 @@ export default function Dashboard() {
         setNewsletter({
           content: data.data.content,
           date: data.data.date,
-          metadata: {
-            date: data.data.date
+          metadata: data.data.metadata || {
+            date: data.data.date,
+            articles_count: 0,
+            papers_count: 0,
+            posts_count: 0,
+            themes: []
           }
         })
         setError(null)

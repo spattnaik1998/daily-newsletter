@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { ChevronDown, Download, Share2, Bookmark, Zap, Sparkles, BookOpen, Users, Lightbulb } from 'lucide-react'
+import { ChevronDown, Download, Share2, Bookmark, Zap, Sparkles, BookOpen, Users, Lightbulb, Newspaper } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface NewsletterSection {
@@ -31,69 +31,14 @@ interface TieredNewsletterViewerProps {
 }
 
 export default function TieredNewsletterViewer({ content, metadata }: TieredNewsletterViewerProps) {
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
   const [saved, setSaved] = useState(false)
 
-  const toggleSection = (id: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }))
-  }
-
-  const sections: NewsletterSection[] = [
-    {
-      type: 'lead',
-      title: 'Lead Story',
-      icon: <Zap className="w-5 h-5" />,
-      content: 'The single most important AI development today'
-    },
-    {
-      type: 'must-read',
-      title: 'Must Read Today',
-      icon: <Sparkles className="w-5 h-5" />,
-      content: 'Top 3 developments that move the needle'
-    },
-    {
-      type: 'news',
-      title: 'AI News Briefing',
-      icon: <Newspaper className="w-5 h-5" />,
-      content: `${metadata?.articles_count || 0} articles from 17 sources`
-    },
-    {
-      type: 'spotlight',
-      title: 'Research Spotlight',
-      icon: <BookOpen className="w-5 h-5" />,
-      content: 'Featured paper worth deep-diving into'
-    },
-    {
-      type: 'insights',
-      title: 'Community Insights',
-      icon: <Users className="w-5 h-5" />,
-      content: `${metadata?.posts_count || 0} posts from 12 newsletters`
-    },
-    {
-      type: 'themes',
-      title: 'Emerging Themes',
-      icon: <Lightbulb className="w-5 h-5" />,
-      content: metadata?.themes?.join(', ') || 'Detected patterns'
-    }
-  ]
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+  if (!content) {
+    return (
+      <div className="p-8 text-center text-slate-400">
+        <p>No newsletter content available</p>
+      </div>
+    )
   }
 
   return (
@@ -127,97 +72,75 @@ export default function TieredNewsletterViewer({ content, metadata }: TieredNews
       </motion.div>
 
       {/* Newsletter Metadata */}
-      <motion.div
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 glass rounded-lg"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <div className="text-center">
-          <div className="text-2xl font-bold gradient-text">{metadata?.articles_count || 0}</div>
-          <div className="text-sm text-slate-400">News Articles</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold gradient-text">{metadata?.papers_count || 0}</div>
-          <div className="text-sm text-slate-400">Research Papers</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold gradient-text">{metadata?.posts_count || 0}</div>
-          <div className="text-sm text-slate-400">Newsletter Posts</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold gradient-text">{metadata?.themes?.length || 0}</div>
-          <div className="text-sm text-slate-400">Emerging Themes</div>
-        </div>
-      </motion.div>
+      {metadata && (
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 glass rounded-lg border border-slate-700"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="text-center">
+            <div className="text-2xl font-bold gradient-text">{metadata.articles_count || 0}</div>
+            <div className="text-sm text-slate-400">News Articles</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold gradient-text">{metadata.papers_count || 0}</div>
+            <div className="text-sm text-slate-400">Research Papers</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold gradient-text">{metadata.posts_count || 0}</div>
+            <div className="text-sm text-slate-400">Newsletter Posts</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold gradient-text">{metadata.themes?.length || 0}</div>
+            <div className="text-sm text-slate-400">Emerging Themes</div>
+          </div>
+        </motion.div>
+      )}
 
-      {/* Newsletter Sections */}
+      {/* Full Newsletter Content */}
       <motion.div
-        className="space-y-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        className="border border-slate-700 rounded-xl overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
       >
-        {sections.map((section, index) => (
-          <motion.div
-            key={section.type}
-            variants={itemVariants}
-            className="border border-slate-700 rounded-xl overflow-hidden hover-lift"
+        <div className="p-8 bg-slate-900 bg-opacity-50 prose prose-invert max-w-none overflow-auto max-h-[70vh]">
+          <ReactMarkdown
+            components={{
+              h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-white mt-6 mb-4 gradient-text" {...props} />,
+              h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-white mt-5 mb-3 text-cyan-400" {...props} />,
+              h3: ({ node, ...props }) => <h3 className="text-xl font-semibold text-slate-100 mt-4 mb-2" {...props} />,
+              p: ({ node, ...props }) => <p className="text-slate-300 mb-4 leading-relaxed" {...props} />,
+              ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-2" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-2" {...props} />,
+              li: ({ node, ...props }) => <li className="text-slate-300" {...props} />,
+              strong: ({ node, ...props }) => <strong className="text-cyan-300 font-semibold" {...props} />,
+              em: ({ node, ...props }) => <em className="text-slate-200 italic" {...props} />,
+              a: ({ node, href, ...props }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyan-400 hover:text-cyan-300 underline hover:underline-offset-2 transition-colors"
+                  {...props}
+                />
+              ),
+              code: ({ node, inline, ...props }) =>
+                inline ? (
+                  <code className="bg-slate-800 text-cyan-300 px-2 py-1 rounded text-sm font-mono" {...props} />
+                ) : (
+                  <code className="block bg-slate-800 text-slate-300 p-4 rounded-lg overflow-x-auto font-mono text-sm mb-4" {...props} />
+                ),
+              blockquote: ({ node, ...props }) => (
+                <blockquote className="border-l-4 border-cyan-500 pl-4 italic text-slate-400 my-4" {...props} />
+              ),
+              hr: ({ node, ...props }) => <hr className="border-t border-slate-700 my-6" {...props} />
+            }}
           >
-            {/* Section Header */}
-            <button
-              onClick={() => toggleSection(section.type)}
-              className="w-full p-6 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 transition-colors flex items-center justify-between group"
-            >
-              <div className="flex items-center gap-4 text-left flex-1">
-                <div className="text-cyan-400 group-hover:text-cyan-300 transition-colors">
-                  {section.icon}
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors">
-                    {section.title}
-                  </h3>
-                  <p className="text-sm text-slate-400">{section.content}</p>
-                </div>
-              </div>
-              <motion.div
-                animate={{ rotate: expandedSections[section.type] ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ChevronDown size={20} className="text-slate-400" />
-              </motion.div>
-            </button>
-
-            {/* Section Content */}
-            <motion.div
-              initial={false}
-              animate={{ height: expandedSections[section.type] ? 'auto' : 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="p-6 border-t border-slate-700 bg-slate-900 bg-opacity-50 prose prose-invert max-w-none">
-                <ReactMarkdown
-                  components={{
-                    p: ({ node, ...props }) => <p className="text-slate-300 mb-4" {...props} />,
-                    li: ({ node, ...props }) => <li className="text-slate-300 ml-6" {...props} />,
-                    strong: ({ node, ...props }) => <strong className="text-cyan-400 font-semibold" {...props} />,
-                    a: ({ node, href, ...props }) => (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-cyan-400 hover:text-cyan-300 underline"
-                        {...props}
-                      />
-                    )
-                  }}
-                >
-                  {content}
-                </ReactMarkdown>
-              </div>
-            </motion.div>
-          </motion.div>
-        ))}
+            {content}
+          </ReactMarkdown>
+        </div>
       </motion.div>
 
       {/* Emerging Themes Visualization */}
