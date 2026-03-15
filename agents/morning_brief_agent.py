@@ -9,7 +9,7 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import anthropic
-from config.settings import USER_PROFILE
+from config.settings import USER_PROFILE, ANTHROPIC_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +19,17 @@ class MorningBriefAgent:
 
     def __init__(self):
         """Initialize the Morning Brief Agent."""
-        self.client = anthropic.Anthropic()
-        self.model = "claude-opus-4-6"
+        try:
+            if ANTHROPIC_API_KEY:
+                self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+            else:
+                self.client = anthropic.Anthropic()
+            self.model = "claude-opus-4-6"
+            self.api_key_available = ANTHROPIC_API_KEY is not None
+        except Exception as e:
+            logger.error(f"Failed to initialize Morning Brief Agent: {e}")
+            self.client = None
+            self.api_key_available = False
 
     def generate_brief(
         self,
@@ -140,6 +149,11 @@ Today's AI Landscape:
 
 Write the briefing in markdown format. Keep the tone personal but professional—like your
 best source of AI intelligence is talking directly to {user_name}. This should take 2-3 minutes to read."""
+
+        # Check if client is available
+        if not self.client or not self.api_key_available:
+            logger.warning("Anthropic API key not available, using fallback brief generation")
+            return self._fallback_brief(articles, papers, posts, today)
 
         try:
             response = self.client.messages.create(

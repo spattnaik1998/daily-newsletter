@@ -5,7 +5,12 @@ This module centralizes all configuration values for the pipeline,
 including API endpoints, timeouts, and output settings.
 """
 
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Date and Time Settings
 CURRENT_DATE = datetime.now()
@@ -31,8 +36,8 @@ SUBSTACK_HOURS_LOOKBACK = 168  # Substack uses 7-day lookback (weekly newsletter
 MAX_SOURCE_AGE_DAYS = 3  # Maximum age of sources: 2-3 days (evaluated sources)
 
 # API Settings - Anthropic/Claude
-ANTHROPIC_API_KEY = None  # Set via environment variable ANTHROPIC_API_KEY
-ENABLE_RELEVANCE_EVALUATION = True  # Enable LLM-based relevance evaluation
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")  # Loaded from .env or environment
+ENABLE_RELEVANCE_EVALUATION = bool(ANTHROPIC_API_KEY)  # Only enable if API key is set
 
 # Summarization Settings
 MAX_SUMMARY_TOKENS = 150
