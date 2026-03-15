@@ -12,6 +12,7 @@ Provides REST API endpoints for:
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import os
 import sys
 from datetime import datetime, timedelta
@@ -30,22 +31,6 @@ from config.settings import USER_PROFILE
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Initialize FastAPI app
-app = FastAPI(
-    title="Daily AI Newsletter API",
-    description="REST API for the Daily AI Newsletter Generator",
-    version="1.0.0"
-)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Global state
 pipeline: Optional[DailyPipeline] = None
@@ -67,9 +52,13 @@ last_stats = {
 NEWSLETTERS_DIR = Path(__file__).parent.parent / "output" / "newsletters"
 
 
-@app.on_event("startup")
-async def startup():
-    """Initialize the pipeline on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan context manager.
+    Handles startup and shutdown events.
+    """
+    # Startup
     global pipeline
     logger.info("Initializing Daily AI Newsletter Pipeline...")
     try:
@@ -77,6 +66,29 @@ async def startup():
         logger.info("✓ Pipeline initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize pipeline: {e}")
+
+    yield
+
+    # Shutdown
+    logger.info("Shutting down pipeline...")
+
+
+# Initialize FastAPI app with lifespan
+app = FastAPI(
+    title="Daily AI Newsletter API",
+    description="REST API for the Daily AI Newsletter Generator",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
@@ -384,4 +396,5 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    # Use import string for reload to work properly
+    uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
